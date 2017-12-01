@@ -1,10 +1,74 @@
-clear
-set more off
-global input "//evansfiles/Files/Project/EPAR/Ethiopia LSMS-ISA/Analysis/357 Land Tenure Analysis/Wave 1/Raw Data"
-global merge "//evansfiles/Files/Project/EPAR/Ethiopia LSMS-ISA/Analysis/357 Land Tenure Analysis/Wave 1/Merged Data"
-global collapse "//evansfiles/Files/Project/EPAR/Ethiopia LSMS-ISA/Analysis/357 Land Tenure Analysis/Wave 1/Collapse Data" 
-global output "R:/Project/EPAR/Working Files/357 - Land Reform Review/Output" 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------
+*Title/Purpose 	: This do.file was developed by the Evans School Policy Analysis & Research Group (EPAR) 
+				  for the construction of a set of land tenure indicators 
+				  using the Ethiopia Socioeconomic Survey (ESS) LSMS-ISA Wave 1 (2011-12)
+*Author(s)		: Maggie Beetstra, Max McDonald, Emily Morton, Pierre Biscaye, Kirby Callaway, Isabella Sun, Emma Weaver
 
+*Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team. 
+				  All coding errors remain ours alone.
+*Date			: 30 November 2017
+
+----------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+*Data source
+*-----------
+*The Ethiopia Socioeconomic Survey was collected by the Ethiopia Central Statistical Agency (CSA) 
+*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS - ISA)
+*The data were collected over the period September to October 2011, November to December 2011, and January to March 2012. 
+*All the raw data, questionnaires, and basic information documents are available for downloading free of charge at the following link
+*http://microdata.worldbank.org/index.php/catalog/2053
+
+
+
+*Summary of Executing the Master do.file
+*-----------
+*This Master do.file constructs selected indicators using the Ethiopia ESS (ETH LSMS) data set.
+*First save the raw unzipped data files from the World bank in a new  "Raw DTA files" folder within the "Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)" folder.
+*The do.file constructs common and intermediate variables, saving dta files when appropriate 
+*in a "\Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Merged Data" folder or "\Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Collapse Data" folder.
+*These folders will need to be created. 
+
+*The processed files include all households, individuals, and plots in the sample.
+*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, restricted to the rural households only, disaggregated by gender of the plot owner.
+*Those summary statistics are outputted in the excel file "ETH_W1_plot_table1.rtf" in the "\Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Final files" folder.
+*The do.file also generates other indicators not used in the summary statistics but are related to land tenure. 
+
+
+/*OUTLINE OF THE DO.FILE
+Below are the list of the main files created by running this Master do.file
+
+
+////////PLOT LEVEL////////
+*sect_cover_pp_w1_collapse.dta
+*AG_indy_collapse.dta
+*AG_field_roster_collapse.dta
+*AG_parcel_roster_collapseprep.dta
+*ETH_W1_plot_table1.rtf
+*ETH_W1_HoH_Literate_collapse.dta
+*ETH_W1_Parcel_All.dta
+
+
+////////HOUSEHOLD LEVEL////////
+*ETH_W1_Plot_HH_sum_collapse.dta 
+*ETH_W1_HoH_sex_collapse.dta 
+*ETH_W1_HH_Level.dta
+
+////////COMMUNITY LEVEL////////
+*ETH_W1_Community_Level.dta
+
+*/
+
+clear
+set more off 
+
+//set directories
+*These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
+
+global input "Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Raw DTA files"
+global merge "Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Merged Data"
+global collapse "Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Collapse Data" 
+global output "Ethiopia ESS LSMS-ISA - Wave 1 (2011-12)\Final files" 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			1. Prepare Raw Data from Ag Sections 							//
@@ -462,7 +526,7 @@ svyset clusterid [pweight=plot_weight], strata(strataid) singleunit(centered)
 eststo plots1: svy, subpop(if fem_plot_owned!=.): mean fem_plot_owned fem_only_plot_own male_only_plot_own mixed_gen_plot_own
 matrix N = e(_N)
 estadd scalar subpop_N = N[1,1]
-esttab plots1 using "$output/ETH_w1_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("Owned Plots with a Certificate") collabels(none) title("Table 1. Proportion of plots with certificate by gender")  /// 
+esttab plots1 using "$output/ETH_W1_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("Owned Plots with a Certificate") collabels(none) title("Table 1. Proportion of plots with certificate by gender")  /// 
 note("Unlike waves 2 and 3, there is no question in wave 1 for who decides whether to sell a plot or use it as collateral. The only variable related to ownership is whether the household has a certificate for the plot. For plots with a certificate, respondents are asked about the identity of the certificate holder. As such, we are not able to analyze the gender of the owners for plots that do and that do not have a certificate. Respondents were asked to specify up to two household members as having their name on the certificate, and we designate these as plot owners. Plots with a female owner had a female listed as either the first or second certificate holder, and may also have a male certificate holder. Estimates are plot-level cluster-weighted means, with standard errors in parentheses.") replace ///
 stats(subpop_N, label("Observations") fmt(0))
 
@@ -480,7 +544,7 @@ la var hoh_literate "Can the head of household read and write?; YES=1 NO=2"
 
 drop if hh_s2q00!=1
 
-save "$collapse/ETH_w1_HoH_Literate_collapse.dta", replace
+save "$collapse/ETH_W1_HoH_Literate_collapse.dta", replace
 
 
 ////////////HH CONSUMPTION///////////
@@ -523,39 +587,18 @@ replace poverty2 =1 if dailycons <= 2
 replace poverty2 =0 if dailycons > 2
 label var poverty2 "Daily consumption in USD per adult equivalent below $2, adjusted ppp"
 
-////GEOVAR
-gen region=saq01
-label values region SAQ01
-
-drop if parcel_id==.
 
 drop if male_only_plot_own==1 & fem_plot_owned==1
 
-gen wave=1
 
-
-
-
-//create categorical variables 
+//categorical variables for plot owner gender
 gen plot_own_gender=.
 replace plot_own_gender=1 if male_only_plot_own==1
 replace plot_own_gender=2 if fem_only_plot_own==1
 replace plot_own_gender=3 if mixed_gen_plot_own==1
 la var plot_own_gender "1 if male only, 2 if female only, 3 if mixed"
 
-
-////PLOT LEVEL EXPORT TO EXCEL FOR TABLEAU
-export excel household_id parcel_id region plot_cert hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-plot_own_gender fem_plot_owned fem_only_plot_own male_only_plot_own mixed_gen_plot_own ///
-dailycons poverty125 poverty2 wave using "\\evansfiles\files\Project\EPAR\Working Files\357 - Land Reform Review\Tableau\Excel\ETH_W1_Plot.xls", sheetmodify firstrow(varlabel)
-
-keep household_id parcel_id region plot_cert hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-plot_own_gender fem_plot_owned fem_only_plot_own male_only_plot_own mixed_gen_plot_own ///
-dailycons poverty125 poverty2 wave
-
-save "$merge/ETH_W1_tableau.dta", replace 
+save "$merge/ETH_W1_Parcel_All.dta", replace 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			4. Generate Land Tenure Variables at HH Level					//
@@ -563,12 +606,12 @@ save "$merge/ETH_W1_tableau.dta", replace
 
 ////////Collapse plot-level data to HH level
 clear
-use "$merge/AG_parcel_roster_collapseprep.dta"
+use "$merge/ETH_W1_Parcel_All.dta"
 
 local sum_vars number_plot plot_certificate plot_area plot_area_owned plot_area_notowned plot_area_rentedin plot_area_usedfree plot_area_rentedout ///
 plot_area_used_nopermission plot_area_used_other plot_granted plot_inherited plot_rentedin plot_usedfree plot_used_nopermission plot_used_other plot_owned plot_rentedout  /// 
 plot_rent_value fem_plot_owned land_rentin_cost land_rental_income 
-collapse (sum) `sum_vars', by (household_id)
+collapse (max) dailycons poverty125 poverty2 (sum) `sum_vars', by (household_id)
 
 la var number_plot "(sum) Total number of plots for the household"
 la var plot_certificate "(sum) Plots for which HH has a certificate"
@@ -608,7 +651,7 @@ la var smallholder2 "total area owned 2ha or less"
 
 
 
-save "$collapse/ETH_w1_Plot_HH_sum_collapse.dta", replace
+save "$collapse/ETH_W1_Plot_HH_sum_collapse.dta", replace
 
 ////////Get data on gender of Head of HH
 clear
@@ -623,7 +666,7 @@ collapse (max) hoh_sex, by (household_id)
 replace hoh_sex=1 if hoh_sex==. //72 change
 la var hoh_sex "Sex of the head of household"	// "Female head"?
 
-save "$collapse/ETH_w1_HoH_sex_collapse.dta", replace
+save "$collapse/ETH_W1_HoH_sex_collapse.dta", replace
 
 
 
@@ -631,11 +674,11 @@ save "$collapse/ETH_w1_HoH_sex_collapse.dta", replace
 clear
 use "$input/Household/sect_cover_hh_w1.dta"
 
-merge 1:1 household_id using "$collapse/ETH_w1_Plot_HH_sum_collapse.dta", gen (_merge_ag_hh) 
+merge 1:1 household_id using "$collapse/ETH_W1_Plot_HH_sum_collapse.dta", gen (_merge_ag_hh) 
 **851 not matched from master
 drop if _merge_ag_hh==2		// none
 
-merge 1:1 household_id using "$collapse/ETH_w1_HoH_sex_collapse.dta", gen (_merge_hoh) 
+merge 1:1 household_id using "$collapse/ETH_W1_HoH_sex_collapse.dta", gen (_merge_hoh) 
 **All matched
 
 //generate strata and cluster variables for analysis with survey weights
@@ -663,7 +706,7 @@ replace ownership_any=1 if plot_owned>0 & plot_owned!=.
 la var ownership_any "HH owns at least 1 plot (granted or inherited)"
 
 
-save "$merge/ETH_w1_Plot_HH_sum_collapse.dta", replace
+save "$merge/ETH_W1_HH_Level.dta", replace
 
 //////////////////////////////////////////////////////////////////////////////
 // 			5. Generate Land Tenure Variables at Community Level			//
@@ -683,4 +726,4 @@ la var land_pct_bush "Share of land in the community that is in bush"
 la var land_pct_largescalefarms "Share of land in the community that is in large scale farms"
 la var land_pct_forest "Share of land in the community that is in forest"
 
-save "$collapse/ETH_w1_comm_land_data.dta", replace
+save "$collapse/ETH_W1_Community_Level.dta", replace

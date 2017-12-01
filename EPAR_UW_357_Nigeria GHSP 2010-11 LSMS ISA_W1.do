@@ -1,13 +1,68 @@
-*Title/Purpose of Do File: NIGERIA LSMS-ISA (2015-16) - Land Tenure Analysis (Project #357)
-*Author(s): Emma Weaver, Emily Morton, Isabella Sun, Kirby Callaway, Pierre Biscaye
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------
+*Title/Purpose 	: This do.file was developed by the Evans School Policy Analysis & Research Group (EPAR) 
+				  for the construction of a set of land tenure indicators
+				  using the Nigeria General Household Survey (GHS) LSMS-ISA Wave 1 (2010-11)
+*Author(s)		: Pierre Biscaye, Kirby Callaway, Emily Morton, Isabella Sun, Emma Weaver
+*Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team 
+				  All coding errors remain ours alone.
+*Date			: 30 November 2017
+----------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+*Data source
+*-----------
+*The Nigeria General Household Survey was collected by the Nigeria National Bureau of Statistics (NBS) 
+*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS - ISA)
+*The data were collected over the period  August to October 2010 and February to April 2011. 
+*All the raw data, questionnaires, and basic information documents are available for downloading free of charge at the following link
+*http://microdata.worldbank.org/index.php/catalog/1002
+
+
+
+*Summary of Executing the Master do.file
+*-----------
+*This Master do.file constructs selected indicators using the Nigeria General Household Survey (NG LSMS) data set.
+*First, save the raw unzipped data files from the World Bank in the "Raw DTA files" folder within the "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)" folder.  
+*The do.file constructs common and intermediate variables, saving dta files when appropriate 
+*in a "\Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Merged Data" folder or "\Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Collapse Data" folder.
+*These folders will need to be created. 
+
+
+*The processed files include all households, individuals, and plots in the sample.
+*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, restricted to the rural households only, disaggregated by gender of the plot owner.
+*Those summary statistics are outputted in the excel file "NG_W1_plot_table1.rtf" in the "\Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Final files" folder.
+*The do.file also generates other indicators not used in the summary statistics but are related to land tenure. 
+
+
+
+/*OUTLINE OF THE DO.FILE
+
+/////PLOT LEVEL//////
+SEC_A1_11A_11B_HH_PLOT.dta
+AG_indy_collapse1.dta 
+AG_indy_collapse2.dta
+AG_indy_collapse.dta
+AG_plot-level_merge.dta
+W1_AG_Plot_Level_Land_Variables.dta
+NG_W1_plot_table1.rtf
+W1_AG_Plot_Level_Land_Variables_All.dta
+
+////HOUSEHOLD LEVEL////
+NG_W1_HH_Level.dta
+
+*/
+
 
 clear
+set more off
 
-global input "\\evansfiles\files\Project\EPAR\Nigeria LSMS-ISA\Analysis\357 Land Tenure Indicators\2010-2011\Data"
-global merge "\\evansfiles\files\Project\EPAR\Nigeria LSMS-ISA\Analysis\357 Land Tenure Indicators\2010-2011\Merged Data"
-global collapse "\\evansfiles\files\Project\EPAR\Nigeria LSMS-ISA\Analysis\357 Land Tenure Indicators\2010-2011\Collapse Data"
-global output "R:\Project\EPAR\Working Files\357 - Land Reform Review\Output" 
+//set directories
+*These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
 
+global input "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Raw DTA files"
+global merge "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Merged Data"
+global collapse "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Collapse Data" 
+global output "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Final files" 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			1. Merge Post-Planting and Post-Harvest Plot Roster and Details //
@@ -497,7 +552,7 @@ svyset clusterid [pweight=plot_weight], strata(strataid) singleunit(centered)
 eststo plots1: svy, subpop(if ownership_owned==1): mean fem_plot_own2 fem_only_plot_own2 mixed_gen_plot_own2 male_only_plot_own2
 matrix N = e(_N)
 estadd scalar subpop_N = N[1,1]
-esttab plots1 using "$output/NIG_w1_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("All Owned Plots") collabels(none) title("Table X. Proportion of owned plots, by sex of owner and title/certificate type (Nigeria, 2010)")  /// 
+esttab plots1 using "$output/NG_W1_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("All Owned Plots") collabels(none) title("Table X. Proportion of owned plots, by sex of owner and title/certificate type (Nigeria, 2010)")  /// 
 note("The sample excludes plots rented in, used free of charge, borrowed from a family member, allocated from the village council, or squatted on, and three owned plots with missing data on gender of the plot owner. Estimates are plot-level cluster-weighted means, with standard errors in parentheses.") replace stats(subpop_N, label("Observations") fmt(0))
 
 //////////////////////////////////////////////////////////////////////////////
@@ -552,14 +607,7 @@ replace poverty2 =0 if dailycons > 2
 label var poverty2 "Daily consumption in USD per adult equivalent below $2, adjusted ppp"
 
 
-save "$merge\W1_AG_Plot_Level_Land_Variables_All.dta", replace 
-
-gen plot_cert=.
-gen wave=1
-
-
-
-//create categorical variables 
+//categorical variables for plot owner gender 
 gen plot_own_gender=.
 replace plot_own_gender=1 if male_only_plot_own2==1
 replace plot_own_gender=2 if fem_only_plot_own2==1
@@ -568,18 +616,7 @@ la var plot_own_gender "1 if male only, 2 if female only, 3 if mixed gender"
 
 
 
-////PLOT LEVEL EXPORT TO EXCEL FOR TABLEAU
-export excel hhid plotid state plot_cert hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-plot_own_gender fem_plot_own2 fem_only_plot_own2 male_only_plot_own2 mixed_gen_plot_own2 ownership_owned ///
-dailycons poverty125 poverty2 wave using "\\evansfiles\files\Project\EPAR\Working Files\357 - Land Reform Review\Tableau\Excel\NG_W1_Plot.xls", sheetmodify firstrow(varlabel)
-
-keep hhid plotid state plot_cert hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-plot_own_gender fem_plot_own2 fem_only_plot_own2 male_only_plot_own2 mixed_gen_plot_own2 ownership_owned ///
-dailycons poverty125 poverty2 wave
-
-save "$merge\NG_W1_tableau.dta", replace 
+save "$merge\W1_AG_Plot_Level_Land_Variables_All.dta", replace 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			5. Other land tenure indicator variables at HH Level	         //
@@ -591,7 +628,7 @@ use "$merge\W1_AG_Plot_Level_Land_Variables_All.dta"
 
 local sum_vars plot_area plot_area_owned plot_area_notowned ownership_owned ownership_usedfree ownership_rented fem_plot_own2 fem_only_plot_own2 male_only_plot_own2 mixed_gen_plot_own2
 local hoh_vars hoh_fem hoh_literate hoh_age
-collapse `hoh_vars' (max) number_plots (firstnm) clusterid strataid (sum) `sum_vars', by (hhid) 
+collapse `hoh_vars' (max) number_plots dailycons poverty2 poverty125 (firstnm) clusterid strataid (sum) `sum_vars', by (hhid) 
 
 
 la var plot_area "total area of all plots, ha"
@@ -621,4 +658,4 @@ replace smallholder2_owned = 0 if plot_area_owned >2 & plot_area_owned!= .
 la var smallholder2 "total area owned 2ha or less"
 
 
-save "$collapse\W1_Plot_HH_sum_collapse.dta", replace
+save "$collapse\NG_W1_HH_Level.dta", replace

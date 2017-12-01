@@ -1,14 +1,76 @@
-*Title/Purpose of Do File: Tanzania LSMS-ISA (2012-13) - Land Tenure Analysis (Project #357)
-*Author(s): Maggie Beetstra, Max McDonald, Emily Morton, Pierre Biscaye, Kirby Callaway, Isabella Sun, Emma Weaver
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------
+*Title/Purpose 	: This do.file was developed by the Evans School Policy Analysis & Research Group (EPAR) 
+				  for the construction of a set of land tenure indicators 
+				  using the Tanzania National Panel Survey (TNPS) LSMS-ISA Wave 3 (2012-13)
+*Author(s)		: Maggie Beetstra, Max McDonald, Emily Morton, Pierre Biscaye, Kirby Callaway, Isabella Sun, Emma Weaver
+
+*Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team. 
+				  All coding errors remain ours alone.
+*Date			: 30 November 2017
+
+----------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+*Data source
+*-----------
+*The Tanzania National Panel Survey was collected by the Tanzania National Bureau of Statistics (NBS) 
+*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS - ISA)
+*The data were collected over the period October 2012 to November 2013.
+*All the raw data, questionnaires, and basic information documents are available for downloading free of charge at the following link
+*http://microdata.worldbank.org/index.php/catalog/2252
+
+*Throughout the do-file, we sometimes use the shorthand LSMS to refer to the Tanzania National Panel Survey.
+
+
+*Summary of Executing the Master do.file
+*-----------
+*This Master do.file constructs selected indicators using the Tanzania TNPS (TZA LSMS) data set.
+*First save the raw unzipped data files from the World bank in a new  "Raw DTA files" folder within the "Tanzania TNPS - LSMS-ISA - Wave 3 (2012-13)" folder.
+*The do.file constructs common and intermediate variables, saving dta files when appropriate 
+*in a "\Tanzania TNPS - LSMS-ISA - Wave 3 (2012-13)\Merged Data" folder or "\Tanzania TNPS - LSMS-ISA - Wave 3 (2012-13)\Collapse Data" folder.
+*These folders will need to be created. 
+
+*The processed files include all households, individuals, and plots in the sample.
+*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, restricted to the rural households only, disaggregated by gender of the plot owner.
+*Those summary statistics are outputted in the excel file "TZ_W3_plot_table1.rtf" in the "\Tanzania TNPS - LSMS-ISA - Wave 3 (2012-13)\Final files" folder.
+*The do.file also generates other indicators not used in the summary statistics but are related to land tenure. 
+
+ 
+/*OUTLINE OF THE DO.FILE
+Below are the list of the main files created by running this Master do.file
+
+////////PLOT LEVEL////////
+*SEC_2A_2B_HH_PLOT.dta
+*SEC_3A_3B_HH_PLOT.dta
+*AG_indy_collapse.dta
+*AG_plot-level_merge.dta
+*W3_AG_Plot_Level_Land_Variables.dta
+*TZ_W3_plot_table1.rtf
+*TZ_W3_Plot_Level_All.dta
+
+////////HOUSEHOLD LEVEL////////
+*W3_HoH_sex_collapse.dta
+*W3_Plot_HH_sum_collapse.dta
+*TZ_W3_HH_Level.dta
+
+////////COMMUNITY LEVEL////////
+*TZ_W3_Community_Level.dta
+
+*/
+
+
 
 clear
-
 set more off
 
-global input "\\evansfiles\files\Project\EPAR\Tanzania LSMS-ISA\Analysis\357 Land Analysis\2012-13\Raw Data"
-global merge "\\evansfiles\files\Project\EPAR\Tanzania LSMS-ISA\Analysis\357 Land Analysis\2012-13\Merged Data"
-global collapse "\\evansfiles\files\Project\EPAR\Tanzania LSMS-ISA\Analysis\357 Land Analysis\2012-13\Collapse Data" 
-global output "R:\Project\EPAR\Working Files\357 - Land Reform Review\Output" 
+//set directories
+*These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
+
+global input "Tanzania TNPS - LSMS-ISA Wave 3 (2012-13)\Raw DTA files"
+global merge "Tanzania TNPS - LSMS-ISA Wave 3 (2012-13))\Merged Data"
+global collapse "Tanzania TNPS - LSMS-ISA Wave 3 (2012-13)\Collapse Data" 
+global output "Tanzania TNPS - LSMS-ISA Wave 3 (2012-13)\Final files" 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			1. Merge LRS and SRS Plot Roster and Details 					//
@@ -316,7 +378,7 @@ estadd scalar subpop_N = N[1,1]
 eststo plots1b: svy, subpop(if plot_title_held==0): mean fem_plot_owned fem_only_plot_own mixed_gen_plot_own male_only_plot_own 
 matrix N = e(_N)
 estadd scalar subpop_N = N[1,1]
-esttab plots1 plots1a plots1b using "$output/TZ_w3_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("All Owned Plots" "Owned plots with a Title/Certificate" "Owned plots with No Title/Certificate" ) collabels(none) title("Table 1. Proportion of owned plots, by sex of owner and title/certificate type (Tanzania, 2012)")  /// 
+esttab plots1 plots1a plots1b using "$output/TZ_W3_plot_table1.rtf", cells(b(fmt(3)) & se(fmt(3) par)) label mlabels("All Owned Plots" "Owned plots with a Title/Certificate" "Owned plots with No Title/Certificate" ) collabels(none) title("Table 1. Proportion of owned plots, by sex of owner and title/certificate type (Tanzania, 2012)")  /// 
 note("The sample excludes plots rented in or used free of charge, and four owned plots with missing data on gender of the plot owner. Estimates are plot-level cluster-weighted means, with standard errors in parentheses.") replace stats(subpop_N, label("Observations") fmt(0))
 
 
@@ -664,7 +726,7 @@ la var district_name "district name"
 
 gen wave=3
 
-save "$merge\TZ_W3_Plot_Level_All.dta", replace
+
 
 gen hhid=y3_hhid 
 
@@ -675,22 +737,27 @@ replace gender_plot_owner=2 if fem_only_plot_own==1
 replace gender_plot_owner=3 if mixed_gen_plot_own==1
 label var gender_plot_owner "1 is male only, 2 if female only, 3 is mixed"
 
-////PLOT LEVEL EXPORT TO EXCEL FOR TABLEAU
-export excel hhid plotnum region plot_title_held hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-gender_plot_owner fem_plot_owned fem_only_plot_own male_only_plot_own mixed_gen_plot_own ownership_own2 ///
-dailycons poverty125 poverty2 wave using "\\evansfiles\files\Project\EPAR\Working Files\357 - Land Reform Review\Tableau\Excel\TZ_W3_Plot.xls", sheetmodify firstrow(varlabel)
-
-keep hhid plotnum region plot_title_held hoh_fem hoh_age hoh_literate ///
-plot_area plot_area_owned plot_area_notowned  ///
-gender_plot_owner fem_plot_owned fem_only_plot_own male_only_plot_own mixed_gen_plot_own ownership_own2 ///
-dailycons poverty125 poverty2 wave
-
-save "$merge\TZ_W3_tableau.dta", replace 
+save "$merge\TZ_W3_Plot_Level_All.dta", replace
 
 //////////////////////////////////////////////////////////////////////////////
 // 			5. Other land tenure indicator variables at HH Level	         //
 /////////////////////////////////////////////////////////////////////////////
+
+
+/////HOH GENDER
+clear
+use "$input/Household/HH_SEC_B.dta
+
+gen hoh_sex=.
+replace hoh_sex=0 if hh_b02==1 & indidy3==1
+replace hoh_sex=1 if hh_b02==2 & indidy3==1
+
+collapse (max) hoh_sex, by (y3_hhid) 
+
+la var hoh_sex "Sex of the head of household"
+
+save "$collapse\W3_HoH_sex_collapse.dta", replace
+
 
 //// Collapse plot-level data to HH level//
 clear
@@ -699,7 +766,7 @@ use "$merge\TZ_W3_Plot_Level_All.dta"
 local sum_vars plot_title_held plot_area plot_area_owned plot_area_notowned plot_area_rentedin plot_area_usedfree plot_area_rentedout ///
 ownership_owned ownership_sharedown ownership_usedfree ownership_rentedin ownership_sharedrent ownership_rent2 ownership_own2 /// 
 value_owned_plot plot_security plot_right_sell fem_plot_owned rent_in_plot_cost plot_rented_out plot_rental_income_total 
-collapse (max) number_plots (firstnm) clusterid strataid (sum) `sum_vars', by (y3_hhid) 
+collapse (max) number_plots dailycons poverty125 poverty2 (firstnm) clusterid strataid (sum) `sum_vars', by (y3_hhid) 
 
 la var number_plots "(sum) Total number of plots for the household"
 la var plot_title_held "(sum) Plots for which household held a title"
@@ -724,7 +791,6 @@ la var rent_in_plot_cost "(sum) Cost to rent in plots in last year"
 la var plot_rented_out "(sum) Number of plots rented out"
 la var plot_rental_income_total "(sum) Income from renting out plots in last year"
 
-save "$collapse\w3_Plot_HH_sum_collapse.dta", replace
 
 ////SMALLHOLDER////
 
@@ -738,29 +804,16 @@ replace smallholder2_owned = 1 if plot_area_owned <=2
 replace smallholder2_owned = 0 if plot_area_owned >2 & plot_area_owned!= . 
 la var smallholder2 "total area owned 2ha or less"
 
-
-/////HOH GENDER
-clear
-use "$input/Household/HH_SEC_B.dta
-
-gen hoh_sex=.
-replace hoh_sex=0 if hh_b02==1 & indidy3==1
-replace hoh_sex=1 if hh_b02==2 & indidy3==1
-
-collapse (max) hoh_sex, by (y3_hhid) 
-
-la var hoh_sex "Sex of the head of household"
-
-save "$collapse\w3_HoH_sex_collapse.dta", replace
+save "$collapse\W3_Plot_HH_sum_collapse.dta", replace
 
 ////////Merge in HHs that did not complete ag section
 clear
 use "$input/Household/HH_SEC_A.dta"
 
-merge 1:1 y3_hhid using "$collapse\w3_Plot_HH_sum_collapse.dta", gen (_merge_ag_hh) 
+merge 1:1 y3_hhid using "$collapse\W3_Plot_HH_sum_collapse.dta", gen (_merge_ag_hh) 
 **3331 matched, 1679 not matched from master - did not complete ag questionnaire
 
-merge 1:1 y3_hhid using "$collapse\w3_HoH_sex_collapse.dta", gen (_merge_hoh) 
+merge 1:1 y3_hhid using "$collapse\W3_HoH_sex_collapse.dta", gen (_merge_hoh) 
 **5010 matched
 
 //Turning the value variables into thousands to help with presentation in table form
@@ -792,7 +845,7 @@ la var plot_security_prop "Proportion of plots the HH is comfortable leaving unc
 gen plot_right_sell_prop=plot_right_sell/ownership_own2
 la var plot_right_sell_prop "Proportion of owned plots HH has right to sell or use as collateral"
 
-save "$merge\w3_Plot_HH_sum_collapse.dta", replace
+save "$merge\TZ_W3_HH_Level.dta", replace
 
 //////////////////////////////////////////////////////////////////////////////
 // 			6. Land Tenure Indivator Variables at Community Level          //
@@ -911,4 +964,4 @@ replace landuse_other_pct=0 if landuse_other_pct==.
 la var landuse_other_ha "Land used for other purposes, ha, 2012"
 la var landuse_other_pct "Percentage of land used for other purposes, 2012"
 
-save "$collapse/w3_community_collapseprep.dta", replace
+save "$collapse/TZ_W3_Community_Level.dta", replace
