@@ -3,16 +3,23 @@ This repository includes Stata do.files developed by the Evans School Policy Ana
 Code is currently available for 10 survey instruments:
 
 -Ethiopia Socioeconomic Survey (ESS) Wave 3, 2015/16 (LSMS-ISA)
+
 -Ethiopia Socioeconomic Survey (ESS) Wave 2, 2013/14 (LSMS-ISA)
+
 -Ethiopia Socioeconomic Survey (ESS) Wave 1, 2011/12 (LSMS-ISA)
 
 -Nigeria General Household Survey-Panel (GHSP) Wave 3, 2015/16 (LSMS-ISA)
+
 -Nigeria General Household Survey-Panel (GHSP) Wave 2, 2012/13 (LSMS-ISA)
+
 -Nigeria General Household Survey-Panel (GHSP) Wave 1, 2010/11 (LSMS-ISA)
 
 -Tanzania National Panel Survey (TNPS) Wave 4, 2014/15 (LSMS-ISA)		
+
 -Tanzania National Panel Survey (TNPS) Wave 3, 2012/13 (LSMS-ISA)
+
 -Tanzania National Panel Survey (TNPS) Wave 2, 2010/11 (LSMS-ISA)
+
 -Tanzania National Panel Survey (TNPS) Wave 1, 2008/09 (LSMS-ISA)
 
 If you use or modify our code, please cite us using the provided citation.
