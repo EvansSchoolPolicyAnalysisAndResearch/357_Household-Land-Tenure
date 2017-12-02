@@ -42,8 +42,9 @@ To run the .do file for a given instrument, you will first need to download the 
 	7) You will be asked to log in or register before you can access the files. Do so.
 	8) After logging in, you will be able to download the files in a variety of formats. 
 	9) Our code uses Stata, so you should download the "Data in Stata" zipped file using the provided link. (Note, these files are several MBs, and may take some time to download depending on your connection speed).
-	10) After you have downloaded the raw zipped Stata data files, copy the zipped folder to your desired working folder.
+	10) After you have downloaded the raw zipped Stata data files, copy the zipped folder to a folder titled "Raw DTA files" in your desired working folder.
 	11) After copying the zipped data folder into this directory, unzip the folder to extract the raw data in this location. Do not change how the data are organized as our code references the existing structure of the data files and folders as organized by the World Bank.
+	13) Within your desired working folder, also create folders titled "Merged Data", "Collapse Data", and "Final files". *Note: you can provide alternative names for these folders, as long as you do not change the name of the macro, e.g. "output", as these are referenced throughout the .do file.
 	12) Make sure to edit the global macros at the top of each do file to specify the location where you have stored the data.
 
 Once you have copied over and unzipped the raw data files into your working folder and updated the do file macro specifying the filepath for that folder, you will be able to run the .do file for that instrument.
