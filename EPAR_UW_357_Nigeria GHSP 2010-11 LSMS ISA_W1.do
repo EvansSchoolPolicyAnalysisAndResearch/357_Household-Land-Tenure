@@ -27,11 +27,10 @@
 *Summary of Executing the Master do.file
 *-----------
 *This Master do.file constructs selected indicators using the Nigeria General Household Survey (NG LSMS) data set.
-*First: Save the raw unzipped data files from the World Bank in the 
-*"Raw DTA files" folder within the "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)" folder.  
+*First: Save the raw unzipped data files from the World bank in a new "Raw DTA files" folder.
 *The do.file constructs common and intermediate variables, saving dta files when appropriate 
-*in a "\Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Merged Data" folder or "\Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Collapse Data" folder.
-*These folders will need to be created. 
+*in a "Merged Data" folder or "Collapse Data" folder.
+*These folders will need to be created and the filepaths updated in the global macros at the beginning of the do.file. 
 
 *The processed files include all households, individuals, and plots in the sample.
 *In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, 
@@ -64,13 +63,13 @@ NG_W1_HH_Level.dta
 clear
 set more off
 
-//set directories
+//set directories ****specify the filepaths****
 *These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
 
-global input "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Raw DTA files"
-global merge "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Merged Data"
-global collapse "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Collapse Data" 
-global output "Nigeria GHSP - LSMS-ISA Wave 1 (2010-11)\Final files" 
+global input "filepath to folder where you have saved Raw DTA files"
+global merge "filepath to folder you created to save Merged Data"
+global collapse "filepath to folder you created to save Collapse Data" 
+global output "filepath to folder you created to save Final files" 
 
 //////////////////////////////////////////////////////////////////////////////
 // 			1. Merge Post-Planting and Post-Harvest Plot Roster and Details //

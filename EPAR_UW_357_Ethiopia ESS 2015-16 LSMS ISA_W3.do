@@ -26,11 +26,10 @@
 *Summary of Executing the Master do.file
 *-----------
 *This Master do.file constructs selected indicators using the Ethiopia LSMS-ISA (ETH LSMS) data set.
-*First: Save the raw unzipped data files from the World bank into a new   
-*"Raw DTA files" folder within the "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)" folder.
+*First: Save the raw unzipped data files from the World bank in a new "Raw DTA files" folder.
 *The do.file constructs common and intermediate variables, saving dta files when appropriate 
-*in a "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Merged Data" folder or "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Collapse Data" folder.
-*These folders will need to be created. 
+*in a "Merged Data" folder or "Collapse Data" folder.
+*These folders will need to be created and the filepaths updated in the global macros at the beginning of the do.file. 
 
 *The processed files include all households, individuals, and plots in the sample.
 *In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, 
@@ -67,13 +66,13 @@
 clear
 set more off 
 
-//set directories
+//set directories ****specify the filepaths****
 *These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
 
-global input "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Raw DTA files"
-global merge "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Merged Data"
-global collapse "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Collapse Data" 
-global output "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Final files" 
+global input "filepath to folder where you have saved Raw DTA files"
+global merge "filepath to folder you created to save Merged Data"
+global collapse "filepath to folder you created to save Collapse Data" 
+global output "filepath to folder you created to save Final files" 
 
 
 //////////////////////////////////////////////////////////////////////////////

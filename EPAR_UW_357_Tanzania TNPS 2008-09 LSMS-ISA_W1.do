@@ -27,11 +27,10 @@
 *Summary of Executing the Master do.file
 *-----------
 *This Master do.file constructs selected indicators using the Tanzania TNPS (TZA LSMS) data set.
-*First: Save the raw unzipped data files from the World bank in a new 
-*"Raw DTA files" folder within the "Tanzania TNPS - LSMS-ISA - Wave 1 (2008-09)" folder.
+*First: Save the raw unzipped data files from the World bank in a new "Raw DTA files" folder.
 *The do.file constructs common and intermediate variables, saving dta files when appropriate 
-*in the "\Tanzania TNPS - LSMS-ISA - Wave 1 (2008-09)\Merged Data" folder or "\Tanzania TNPS - LSMS-ISA - Wave 1 (2008-09)\Collapse Data" folder.
-*These folders will need to be created. 
+*in a "Merged Data" folder or "Collapse Data" folder.
+*These folders will need to be created and the filepaths updated in the global macros at the beginning of the do.file. 
 
 *The processed files include all households, individuals, and plots in the sample.
 *In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, 
@@ -66,13 +65,13 @@ TZ_W1_Community_Level.dta
 clear
 set more off
 
-//set directories
+//set directories ****specify the filepaths****
 *These paths correspond to the folders where the raw data files are located and where the created data and final data will be stored.
 
-global input "Tanzania TNPS - LSMS-ISA Wave 1 (2008-09)\Raw DTA files"
-global merge "Tanzania TNPS - LSMS-ISA Wave 1 (2008-09)\Merged Data"
-global collapse "Tanzania TNPS - LSMS-ISA Wave 1 (2008-09)\Collapse Data" 
-global output "Tanzania TNPS - LSMS-ISA Wave 1 (2008-09)\Final files" 
+global input "filepath to folder where you have saved Raw DTA files"
+global merge "filepath to folder you created to save Merged Data"
+global collapse "filepath to folder you created to save Collapse Data" 
+global output "filepath to folder you created to save Final files" 
 
 
 //////////////////////////////////////////////////////////////////////////////
