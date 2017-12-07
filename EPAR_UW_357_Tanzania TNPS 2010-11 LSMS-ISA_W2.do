@@ -1,22 +1,23 @@
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------
 *Title/Purpose 	: This do.file was developed by the Evans School Policy Analysis & Research Group (EPAR) 
-				  for the construction of a set of land tenure indicators 
+				  for the construction of a set of land tenure indicators
 				  using the Tanzania National Panel Survey (TNPS) LSMS-ISA Wave 2 (2010-11)
+				  
 *Author(s)		: Maggie Beetstra, Max McDonald, Emily Morton, Pierre Biscaye, Kirby Callaway, Isabella Sun, Emma Weaver
 
-*Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team. 
+*Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team 
 				  All coding errors remain ours alone.
+				  
 *Date			: 30 November 2017
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-*Data source
+/*Data source
 *-----------
-*The Tanzania National Panel Survey was collected by the Tanzania National Bureau of Statistics (NBS) 
-*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS - ISA)
-*The data were collected over the period October 2010 to November 2011.
+*The Tanzania National Panel Survey (TNPS) was collected by the Tanzania National Bureau of Statistics (NBS) 
+*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS-ISA)
+*The data were collected over the period October 2010 - November 2011.
 *All the raw data, questionnaires, and basic information documents are available for downloading free of charge at the following link
 *http://microdata.worldbank.org/index.php/catalog/1050
 
@@ -26,36 +27,39 @@
 *Summary of Executing the Master do.file
 *-----------
 *This Master do.file constructs selected indicators using the Tanzania TNPS (TZA LSMS) data set.
-*First save the raw unzipped data files from the World bank in a new  "Raw DTA files" folder within the "Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)" folder.
+*First: Save the raw unzipped data files from the World bank in a new 
+*"Raw DTA files" folder within the "Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)" folder.
 *The do.file constructs common and intermediate variables, saving dta files when appropriate 
-*in a "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Merged Data" folder or "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Collapse Data" folder.
+*in the "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Merged Data" folder or "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Collapse Data" folder.
 *These folders will need to be created. 
 
 *The processed files include all households, individuals, and plots in the sample.
-*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, restricted to the rural households only, disaggregated by gender of the plot owner.
-*Those summary statistics are outputted in the excel file "TZ_W2_plot_table1.rtf" in the "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Final files" folder.
-*The do.file also generates other indicators not used in the summary statistics but are related to land tenure. 
-
+*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, 
+*restricted to the rural households only and disaggregated by gender of the plot owner.
+*Those summary statistics are created in the excel file "TZ_W2_plot_table1.rtf", which is saved in the "\Tanzania TNPS - LSMS-ISA - Wave 2 (2010-11)\Final files" folder.
+*The do.file also generates other related indicators that are not used in the summary statistics.
  
-/*OUTLINE OF THE DO.FILE
-Below are the list of the main files created by running this Master do.file
+ 
+*Outline of the do.file
+*-----------
+*Below is the list of the main files created by running this Master do.file:
 
 ////////PLOT LEVEL////////
-*SEC_2A_2B_HH_PLOT.dta
-*SEC_3A_3B_HH_PLOT.dta
-*AG_indy_collapse.dta
-*AG_plot-level_merge.dta
-*W2_AG_Plot_Level_Land_Variables.dta
-*TZ_W2_plot_table1.rtf
-*TZ_W2_Plot_Level_All.dta
+SEC_2A_2B_HH_PLOT.dta
+SEC_3A_3B_HH_PLOT.dta
+AG_indy_collapse.dta
+AG_plot-level_merge.dta
+W2_AG_Plot_Level_Land_Variables.dta
+TZ_W2_plot_table1.rtf
+TZ_W2_Plot_Level_All.dta
 
 ////////HOUSEHOLD LEVEL////////
-*W2_HoH_sex_collapse.dta
-*W2_Plot_HH_sum_collapse.dta
-*TZ_W2_HH_Level.dta
+W2_HoH_sex_collapse.dta
+W2_Plot_HH_sum_collapse.dta
+TZ_W2_HH_Level.dta
 
 ////////COMMUNITY LEVEL////////
-*TZ_W2_Community_Level.dta
+TZ_W2_Community_Level.dta
 
 */
 

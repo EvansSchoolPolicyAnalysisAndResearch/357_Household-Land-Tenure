@@ -2,10 +2,12 @@
 *Title/Purpose 	: This do.file was developed by the Evans School Policy Analysis & Research Group (EPAR) 
 				  for the construction of a set of land tenure indicators 
 				  using the Ethiopia Socioeconomic Survey (ESS) LSMS-ISA Wave 3 (2015-16)
+				  
 *Author(s)		: Maggie Beetstra, Max McDonald, Emily Morton, Pierre Biscaye, Kirby Callaway, Isabella Sun, Emma Weaver
 
 *Acknowledgments: We acknowledge the helpful contributions of members of the World Bank's LSMS-ISA team. 
 				  All coding errors remain ours alone.
+				  
 *Date			: 30 November 2017
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -13,8 +15,8 @@
 
 *Data source
 *-----------
-*The Ethiopia Socioeconomic Survey was collected by the Ethiopia Central Statistical Agency (CSA) 
-*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture(LSMS - ISA)
+*The Ethiopia Socioeconomic Survey (ESS) was collected by the Ethiopia Central Statistical Agency (CSA) 
+*and the World Bank's Living Standards Measurement Study - Integrated Surveys on Agriculture (LSMS-ISA)
 *The data were collected over the period September to December 2015, and February to April 2016. 
 *All the raw data, questionnaires, and basic information documents are available for downloading free of charge at the following link
 *http://microdata.worldbank.org/index.php/catalog/2783
@@ -23,20 +25,23 @@
 
 *Summary of Executing the Master do.file
 *-----------
-*This Master do.file constructs selected indicators using the Ethiopia ESS (ETH LSMS) data set.
-*First save the raw unzipped data files from the World bank in a new  "Raw DTA files" folder within the "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)" folder.
+*This Master do.file constructs selected indicators using the Ethiopia LSMS-ISA (ETH LSMS) data set.
+*First: Save the raw unzipped data files from the World bank into a new   
+*"Raw DTA files" folder within the "Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)" folder.
 *The do.file constructs common and intermediate variables, saving dta files when appropriate 
 *in a "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Merged Data" folder or "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Collapse Data" folder.
 *These folders will need to be created. 
 
 *The processed files include all households, individuals, and plots in the sample.
-*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, restricted to the rural households only, disaggregated by gender of the plot owner.
-*Those summary statistics are outputted in the excel file "ETH_W3_plot_table1.rtf" in the "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Final files" folder.
-*The do.file also generates other indicators not used in the summary statistics but are related to land tenure. 
+*In the middle of the do.file, a block of code estimates summary statistics of total plot ownership and plot title, 
+*restricted to the rural households only and disaggregated by gender of the plot owner.
+*Those summary statistics are created in the excel file "ETH_W3_plot_table1.rtf" in the "\Ethiopia ESS LSMS-ISA - Wave 3 (2015-16)\Final files" folder.
+*The do.file also generates other related indicators that are not used in the summary statistics. 
 
 
-/*OUTLINE OF THE DO.FILE
-Below are the list of the main files created by running this Master do.file
+*Outline of the do.file
+*-----------
+*Below is the list of the main files created by running this Master do.file:
 
 ////////PLOT LEVEL////////
 *sect_cover_pp_w3_collapse.dta
@@ -49,7 +54,7 @@ Below are the list of the main files created by running this Master do.file
 
 
 ////////HOUSEHOLD LEVEL////////
-*ETH_W2_HoH_Literate_collapse.dta
+*ETH_W3_HoH_Literate_collapse.dta
 *ETH_w3_HoH_sex_collapse.dta 
 *ETH_W3_HH_Level.dta
 
