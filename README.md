@@ -15,3 +15,5 @@ Code is currently available for 10 survey instruments:
 The .do files include all of the code used to generate the final set of indicators from the raw survey data for a given survey wave. See the USER GUIDE file in this repository for guidance on how to download the files in this repository and raw data available from the World Bank in order to run the .do files. The .do files create indicators used in generating our summary statistics, as well as a few other related land tenure indicators at the plot, household, and community levels. 
 
 If you use or modify our code, please cite us using the provided citation.
+[![DOI](https://zenodo.org/badge/112248254.svg)](https://zenodo.org/badge/latestdoi/112248254)
+
